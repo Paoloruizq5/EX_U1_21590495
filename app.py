@@ -10,12 +10,14 @@ load_dotenv()
 #crear instancia
 app =  Flask(__name__)
 
-# Configuración de la base de datos PostgreSQL
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
+# cargar variables, configurar db
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL') + "?sslmode=require"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
+with app.app_context():
+        db.create_all()
 # Modelo Categoría
 class Category(db.Model):
     __tablename__ = 'categories'
@@ -56,6 +58,4 @@ def add_post():
     return render_template('create_post.html', categories=categories)
 
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
     app.run(debug=True)
